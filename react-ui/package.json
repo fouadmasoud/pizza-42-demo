@@ -3,14 +3,10 @@
   "version": "0.1.0",
   "private": true,
   "scripts": {
-    "start": "npm run server",
+    "start": "react-scripts start",
     "build": "react-scripts build",
     "test": "react-scripts test",
-    "eject": "react-scripts eject",
-    "spa": "react-scripts start",
-    "server": "node server.js",
-    "server:dev": "nodemon server.js",
-    "dev": "npm run build && npm run server:dev"
+    "eject": "react-scripts eject"
   },
   "dependencies": {
     "@auth0/auth0-react": "^1.10.0",

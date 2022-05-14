@@ -1,0 +1,5 @@
+{ 
+    "domain": "fouadmasoud.auth0.com", 
+    "clientId": "7slYt1IVLk6GYxAW4WhTd2Ecxx7zMciv", 
+    "audience": "https://pizza-42.com/api" 
+}

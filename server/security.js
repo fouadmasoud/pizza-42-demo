@@ -18,8 +18,6 @@ const jwtConfig = {
 
 const checkJwt = jwt(jwtConfig);
 
-console.log("jwtConfig", jwtConfig);
-
-const scope_order = jwtScope("create:orders");
+const scope_order = jwtScope("create:order");
 
 module.exports = { checkJwt, scope_order };

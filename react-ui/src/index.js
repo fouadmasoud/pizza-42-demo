@@ -23,7 +23,7 @@ const providerConfig = {
   ...(config.audience ? { audience: config.audience } : null),
   redirectUri: window.location.origin,
   onRedirectCallback,
-  scope: 'create:order read:order'
+  scope: 'read:order create:order'
 };
 
 ReactDOM.render(

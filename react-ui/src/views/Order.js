@@ -106,6 +106,7 @@ export const ExternalApiComponent = () => {
         apiMessage: responseData,
       });
     } catch (error) {
+      console.log("Order call failed", error);
       setState({
         ...state,
         error: error.error,

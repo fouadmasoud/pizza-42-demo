@@ -38,12 +38,12 @@ if (!isDev && cluster.isMaster) {
     res.send('{"message":"Hello from the custom server!"}');
   });
 
-  // app.get("/api/external", checkJwt, scope_order, (req, res) => {
-  //   res.set('Content-Type', 'application/json');
-  //   res.send({
-  //     msg: "Your access token was successfully validated!",
-  //   });
-  // });
+  app.get("/api/external",  (req, res) => {
+    res.set('Content-Type', 'application/json');
+    res.send({
+      msg: "It's working with no security!",
+    });
+  });
 
   app.post("/api/order", checkJwt, scope_order, jsonParser, (req, res) => {
     console.log(req.body);
@@ -51,6 +51,7 @@ if (!isDev && cluster.isMaster) {
     const pizza = req.body.item;
     res.send({ msg: `Your ${pizza} is on the way!` });
   });
+  
   // All remaining requests return the React app, so it can handle routing.
   app.get("*", function (request, response) {
     response.sendFile(

@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import axios from 'axios';
+import axios from "axios";
 import {
   Button,
   Alert,
@@ -24,12 +24,11 @@ export const ExternalApiComponent = () => {
   });
 
   const [dropdownOpen, setDropdownOpen] = useState(false);
-  const [dropdownValue, setDropdownValue] = useState('Give Me Pizza');
+  const [dropdownValue, setDropdownValue] = useState("Give Me Pizza");
 
   const toggle = () => setDropdownOpen((prevState) => !prevState);
 
   const select = (event) => {
-
     setDropdownValue(event.target.innerText);
     setDropdownOpen(!dropdownOpen);
   };
@@ -74,31 +73,24 @@ export const ExternalApiComponent = () => {
   const callApi = async () => {
     try {
       const token = await getAccessTokenSilently();
+      const timeElapsed = Date.now();
+      const today = new Date(timeElapsed);
 
-      // const response = await fetch(`${apiOrigin}/api/order`, {
-      //   method: 'POST',
-      //   headers: {
-      //     Authorization: `Bearer ${token}`,
-      //     'Content-Type': 'application/json',
-      //   },
-      //   body: JSON.stringify({item: dropdownValue})
-      // });
-      // const responseData = await response.json();
+      const data = {
+        user_id: user.sub,
+        item_ordered: dropdownValue,
+        order_date: today.toISOString(),
+      };
 
-      
-
-        const responseData = await axios({
-          method: 'post',
-          url: `${apiOrigin}/api/order`,
-          data: {
-            item: dropdownValue
-          },
-          headers: { 
-            Authorization: `Bearer ${token}`,
-            'Content-Type': 'application/json'
-           }
-        });
-
+      const responseData = await axios({
+        method: "post",
+        url: `${apiOrigin}/api/order`,
+        data: data,
+        headers: {
+          Authorization: `Bearer ${token}`,
+          "Content-Type": "application/json",
+        },
+      });
 
       setState({
         ...state,
@@ -157,8 +149,12 @@ export const ExternalApiComponent = () => {
               <DropdownToggle caret>{dropdownValue}</DropdownToggle>
               <DropdownMenu>
                 <DropdownItem onClick={select}>cheese pizza - $20</DropdownItem>
-                <DropdownItem onClick={select}>pepperoni pizza - $25</DropdownItem>
-                <DropdownItem onClick={select}>veggie pizza - $28 </DropdownItem>
+                <DropdownItem onClick={select}>
+                  pepperoni pizza - $25
+                </DropdownItem>
+                <DropdownItem onClick={select}>
+                  veggie pizza - $28{" "}
+                </DropdownItem>
               </DropdownMenu>
             </Dropdown>
 

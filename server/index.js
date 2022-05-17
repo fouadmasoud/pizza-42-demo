@@ -4,6 +4,8 @@ const path = require("path");
 const cluster = require("cluster");
 const numCPUs = require("os").cpus().length;
 const { checkJwt, scope_order } = require("./security");
+const { saveOrderHistory } = require("./order-service");
+
 const bodyParser = require("body-parser");
 
 const isDev = process.env.NODE_ENV !== "production";
@@ -38,20 +40,27 @@ if (!isDev && cluster.isMaster) {
     res.send('{"message":"Hello from the custom server!"}');
   });
 
-  app.get("/api/external",  (req, res) => {
-    res.set('Content-Type', 'application/json');
+  app.get("/api/external", (req, res) => {
+    res.set("Content-Type", "application/json");
     res.send({
       msg: "It's working with no security!",
     });
   });
 
   app.post("/api/order", checkJwt, scope_order, jsonParser, (req, res) => {
-    console.log(req.body);
     res.set("Content-Type", "application/json");
-    const pizza = req.body.item;
-    res.send({ msg: `Your ${pizza} is on the way!` });
+
+    try {
+      const response = saveOrderHistory(req.body);
+      if (!response.error) {
+        const pizza = req.body.item_ordered;
+        res.send({ msg: `Your ${pizza} is on the way!` });
+      }
+    } catch (error) {
+      console.log("put in order failed", error);
+    }
   });
-  
+
   // All remaining requests return the React app, so it can handle routing.
   app.get("*", function (request, response) {
     response.sendFile(

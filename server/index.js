@@ -3,10 +3,11 @@ const express = require("express");
 const path = require("path");
 const cluster = require("cluster");
 const numCPUs = require("os").cpus().length;
-const { checkJwt, scope_order } = require("./security");
-const { saveOrderHistory } = require("./order-service");
+const { checkJwt, scopes } = require("./security");
+const { saveOrderHistory, getOrderHistory } = require("./order-service");
 
 const bodyParser = require("body-parser");
+const { nextTick } = require("process");
 
 const isDev = process.env.NODE_ENV !== "production";
 const PORT = process.env.PORT || 3000;
@@ -47,18 +48,28 @@ if (!isDev && cluster.isMaster) {
     });
   });
 
-  app.post("/api/order", checkJwt, scope_order, jsonParser, (req, res) => {
+  app.post("/api/order", checkJwt, scopes.create_order, jsonParser, async (req, res, next) => {
     res.set("Content-Type", "application/json");
 
     try {
-      const response = saveOrderHistory(req.body);
-      if (!response.error) {
-        const pizza = req.body.item_ordered;
-        res.send({ msg: `Your ${pizza} is on the way!` });
-      }
+      const response = await saveOrderHistory(req.body);
+
+      const pizza = req.body.item_ordered;
+      res.send({ msg: `Your ${pizza} is on the way!` });
+
     } catch (error) {
-      console.log("put in order failed", error);
-      throw error;
+      return next(error);
+    }
+  });
+
+  app.get("/api/order", checkJwt, scopes.read_order, jsonParser, async (req, res, next) => {
+    res.set("Content-Type", "application/json");
+
+    try {
+      const response = await getOrderHistory(req.query.user_id);
+        res.send(response);
+    } catch (error) {
+      return next(error);
     }
   });
 

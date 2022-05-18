@@ -19,7 +19,8 @@ export const ExternalApiComponent = () => {
 
   const [state, setState] = useState({
     showResult: false,
-    apiMessage: "",
+    createOrderMessage: "",
+    orderHistory: "",
     error: null,
   });
 
@@ -51,7 +52,7 @@ export const ExternalApiComponent = () => {
       });
     }
 
-    await callApi();
+    await orderPizza();
   };
 
   const handleLoginAgain = async () => {
@@ -68,10 +69,17 @@ export const ExternalApiComponent = () => {
       });
     }
 
-    await callApi();
+    await orderPizza();
   };
 
-  const callApi = async () => {
+  const orderPizza = async () => {
+    setState({
+      ...state,
+      showResult: false,
+      createOrderMessage: "",
+      orderHistory: ""
+    });
+
     try {
       const token = await getAccessTokenSilently();
       const timeElapsed = Date.now();
@@ -86,20 +94,25 @@ export const ExternalApiComponent = () => {
       const responseData = await axios({
         method: "post",
         url: `${apiOrigin}/api/order`,
-        data: data,
+        data,
         headers: {
           Authorization: `Bearer ${token}`,
           "Content-Type": "application/json",
         },
       });
 
+      const orderHistory = await getOrderHistory();
       setState({
         ...state,
         showResult: true,
-        apiMessage: responseData.data.msg,
+        createOrderMessage: responseData.data.msg,
+        orderHistory: orderHistory
       });
+
+      
+
     } catch (error) {
-      console.log("Order call failed", error);
+      console.log("Order Pizza Failed", error.innerText);
       setState({
         ...state,
         error: error.error,
@@ -107,6 +120,32 @@ export const ExternalApiComponent = () => {
     }
   };
 
+  const getOrderHistory = async () => {
+    try {
+      const token = await getAccessTokenSilently();
+      const params = {
+        user_id: user.sub,
+      };
+
+      const responseData = await axios({
+        method: "get",
+        url: `${apiOrigin}/api/order`,
+        params,
+        headers: {
+          Authorization: `Bearer ${token}`,
+          "Content-Type": "application/json",
+        },
+      });
+
+      return responseData.data;
+    } catch (error) {
+      console.log("Get Order History Failed", error.innerText);
+      setState({
+        ...state,
+        error: error.error,
+      });
+    }
+  };
   const handle = (e, fn) => {
     e.preventDefault();
     fn();
@@ -162,7 +201,7 @@ export const ExternalApiComponent = () => {
             <Button
               color="primary"
               className="mt-5"
-              onClick={callApi}
+              onClick={orderPizza}
               disabled={dropdownValue === dropdownDefaultValue}
             >
               Give Me Pizza!
@@ -182,7 +221,10 @@ export const ExternalApiComponent = () => {
           <div className="result-block" data-testid="api-result">
             <h6 className="muted">Result</h6>
             <Highlight>
-              <span>{JSON.stringify(state.apiMessage, null, 2)}</span>
+              <span>{JSON.stringify(state.createOrderMessage, null, 2)}</span>
+            </Highlight>
+            <Highlight>
+              <span>{JSON.stringify(state.orderHistory, null, 2)}</span>
             </Highlight>
           </div>
         )}

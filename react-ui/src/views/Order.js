@@ -7,6 +7,7 @@ import {
   DropdownItem,
   DropdownToggle,
   DropdownMenu,
+  Spinner
 } from "reactstrap";
 import Highlight from "../components/Highlight";
 import { useAuth0, withAuthenticationRequired } from "@auth0/auth0-react";
@@ -21,6 +22,7 @@ export const ExternalApiComponent = () => {
     showResult: false,
     createOrderMessage: "",
     orderHistory: "",
+    isPlacingOrder: false,
     error: null,
   });
 
@@ -77,7 +79,8 @@ export const ExternalApiComponent = () => {
       ...state,
       showResult: false,
       createOrderMessage: "",
-      orderHistory: ""
+      orderHistory: "",
+      isPlacingOrder: true,
     });
 
     try {
@@ -106,11 +109,9 @@ export const ExternalApiComponent = () => {
         ...state,
         showResult: true,
         createOrderMessage: responseData.data.msg,
-        orderHistory: orderHistory
+        orderHistory: orderHistory,
+        isPlacingOrder: false,
       });
-
-      
-
     } catch (error) {
       console.log("Order Pizza Failed", error.innerText);
       setState({
@@ -150,6 +151,8 @@ export const ExternalApiComponent = () => {
     e.preventDefault();
     fn();
   };
+
+  const { isPlacingOrder } = state;
 
   return (
     <>
@@ -199,12 +202,23 @@ export const ExternalApiComponent = () => {
             </Dropdown>
 
             <Button
+              variant="primary"
               color="primary"
               className="mt-5"
               onClick={orderPizza}
               disabled={dropdownValue === dropdownDefaultValue}
             >
-              Give Me Pizza!
+              {isPlacingOrder ? (
+                <Spinner
+                  as="span"
+                  animation="grow"
+                  size="sm"
+                  role="status"
+                  aria-hidden="true"
+                />
+              ) : (
+                "Give Me Pizza!"
+              )}
             </Button>
           </div>
         )}

@@ -237,6 +237,7 @@ export const ExternalApiComponent = () => {
             <Highlight>
               <span>{JSON.stringify(state.createOrderMessage, null, 2)}</span>
             </Highlight>
+            <h6 className="muted">Order History</h6>
             <Highlight>
               <span>{JSON.stringify(state.orderHistory, null, 2)}</span>
             </Highlight>

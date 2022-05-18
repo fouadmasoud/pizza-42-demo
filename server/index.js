@@ -58,6 +58,7 @@ if (!isDev && cluster.isMaster) {
       }
     } catch (error) {
       console.log("put in order failed", error);
+      throw error;
     }
   });
 

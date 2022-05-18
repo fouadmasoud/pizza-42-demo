@@ -12,7 +12,6 @@ const saveOrderHistory = async (orderInfo) => {
     const params = { id: orderInfo.user_id };
     // get the user's current user_metadata
     const user = await management.getUser(params);
-    console.log("current user", user);
 
     const currentOrder = {
         item_ordered: orderInfo.item_ordered,
@@ -27,12 +26,12 @@ const saveOrderHistory = async (orderInfo) => {
         orderHistory = [currentOrder];
     }
 
-    const metadata = user.user_metadata;
+    const metadata = user.user_metadata || {};
     metadata.order_history = orderHistory;
     
 
     const responseData = await management.updateUserMetadata(params, metadata);
-    console.log("save order history success", responseData);
+    console.log("save order history success");
     return { message: "order has been placed" };
   } catch (error) {
     console.log("save order history failed", error);

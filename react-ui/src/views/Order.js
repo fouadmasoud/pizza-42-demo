@@ -14,7 +14,7 @@ import { getConfig } from "../config";
 import Loading from "../components/Loading";
 
 export const ExternalApiComponent = () => {
-  const { apiOrigin = window.location.origin, audience } = getConfig();
+  const { apiOrigin = window.location.origin } = getConfig();
   const { user } = useAuth0();
 
   const [state, setState] = useState({
@@ -23,8 +23,9 @@ export const ExternalApiComponent = () => {
     error: null,
   });
 
+  const dropdownDefaultValue = "Select a Pizza";
   const [dropdownOpen, setDropdownOpen] = useState(false);
-  const [dropdownValue, setDropdownValue] = useState("Give Me Pizza");
+  const [dropdownValue, setDropdownValue] = useState(dropdownDefaultValue);
 
   const toggle = () => setDropdownOpen((prevState) => !prevState);
 
@@ -95,7 +96,7 @@ export const ExternalApiComponent = () => {
       setState({
         ...state,
         showResult: true,
-        apiMessage: responseData,
+        apiMessage: responseData.data.msg,
       });
     } catch (error) {
       console.log("Order call failed", error);
@@ -140,7 +141,7 @@ export const ExternalApiComponent = () => {
           </Alert>
         )}
 
-        <h1>Order Pizza</h1>
+        <h1>Amazing Pizza Is Almost Yours</h1>
         {user.email_verified && (
           <div>
             <p className="lead">Select one of our delicious pizzas to order</p>
@@ -162,9 +163,9 @@ export const ExternalApiComponent = () => {
               color="primary"
               className="mt-5"
               onClick={callApi}
-              disabled={!audience}
+              disabled={dropdownValue === dropdownDefaultValue}
             >
-              Order Pizza
+              Give Me Pizza!
             </Button>
           </div>
         )}
